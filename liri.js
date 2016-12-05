@@ -1,6 +1,6 @@
 var Twitter = require("twitter");
 var SpotifyWebApi = require('spotify-web-api-node');
-var imdb = require('imdb-api');
+var request = require('request');
 
 
 var client = new Twitter({
@@ -18,22 +18,46 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
   }
 });
 
+var spotify =function(){
 spotifyApi.searchTracks('I want it that way')
   .then(function(data) {
     console.log('Search by "I want it that way"', data.body);
   }, function(err) {
     console.error(err);
   });
+}
 
-var movie;
-imdb.getReq({ name: '' }, function(err, things) {
-    movie = things;
+var movie =function(){
+var nodeArgs = process.argv;
+
+var movieName = ""
+for (var i = 2; i < nodeArgs.length; i++) {
+
+  if (i > 2 && i < nodeArgs.length) {
+
+    movieName = movieName + "+" + nodeArgs[i];
+
+  }
+
+  else {
+
+    movieName += nodeArgs[i];
+
+  }
+}
+
+
+var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&r=json";
+console.log(queryUrl);
+
+request(queryUrl, function(error, response, body) {
+
+  if (!error && response.statusCode === 200) {
+
+        console.log("Release Year: " + JSON.parse(body).Year);
+  }
 });
+}
 
-
-imdb.get('The Toxic Avenger').then(function(data) { console.log(data) });
-imdb.getById('tt0090190).then(function(data) { console.log(data) });
-imdb.getReq({ name: '  ' }).then(function(data) { console.log(data) });
-    
 
     
